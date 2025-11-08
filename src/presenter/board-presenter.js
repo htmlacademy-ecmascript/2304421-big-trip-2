@@ -1,11 +1,11 @@
-import SortingView from '../view/sorting.js';
-import TripEventsListView from '../view/trip-events-list.js';
-import NewRoutePoint from '../view/route-point.js';
-import NewPoint from '../view/add-new-point.js';
+import SortingView from '../view/sorting-view.js';
+import TripEventsListView from '../view/trip-events-list-view.js';
+import RoutePointItemView from '../view/route-point-item-view.js';
+import NewPointView from '../view/new-point-view.js';
 import { render } from '../render.js';
 
 export default class BoardPresenter {
-  boardComponent = new TripEventsListView;
+  boardComponent = new TripEventsListView();
 
   constructor({boardContainer}) {
     this.boardContainer = boardContainer;
@@ -14,10 +14,10 @@ export default class BoardPresenter {
   init() {
     render(new SortingView(), this.boardContainer);
     render(this.boardComponent, this.boardContainer);
-    render(new NewPoint(), this.boardComponent.getElement());
+    render(new NewPointView(), this.boardComponent.getElement());
 
     for (let i = 0; i < 3; i++) {
-      render(new NewRoutePoint(), this.boardComponent.getElement());
+      render(new RoutePointItemView(), this.boardComponent.getElement());
     }
   }
 }

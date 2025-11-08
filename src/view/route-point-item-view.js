@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 
-function createNewRoutePointTemplate() {
+function createRoutePointItemViewTemplate() {
   return `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="2019-03-18">MAR 18</time>
@@ -40,9 +40,9 @@ function createNewRoutePointTemplate() {
             </li>`;
 }
 
-export default class NewRoutePoint {
+export default class RoutePointItem {
   getTemplate() {
-    return createNewRoutePointTemplate();
+    return createRoutePointItemViewTemplate();
   }
 
   getElement() {
