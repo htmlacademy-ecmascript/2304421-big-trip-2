@@ -10,9 +10,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e01',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa31',
-      'b4c3e4e6-9053-42ce-b747-e281314baa32',
-      'b4c3e4e6-9053-42ce-b747-e281314baa33'
+      'b4c3e4e6-9053-42ce-b747-e281314baa31'
     ],
     type: 'taxi'
   },
@@ -24,8 +22,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e02',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa34',
-      'b4c3e4e6-9053-42ce-b747-e281314baa35'
+      'b4c3e4e6-9053-42ce-b747-e281314baa34'
     ],
     type: 'bus'
   },
@@ -37,8 +34,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e03',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa36',
-      'b4c3e4e6-9053-42ce-b747-e281314baa37'
+      'b4c3e4e6-9053-42ce-b747-e281314baa36'
     ],
     type: 'train'
   },
@@ -50,8 +46,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa38',
-      'b4c3e4e6-9053-42ce-b747-e281314baa39'
+      'b4c3e4e6-9053-42ce-b747-e281314baa38'
     ],
     type: 'ship'
   },
@@ -64,10 +59,7 @@ const mockPoints = [
     isFavorite: getRandomBoolean(),
     offers: [
       'b4c3e4e6-9053-42ce-b747-e281314baa40',
-      'b4c3e4e6-9053-42ce-b747-e281314baa41',
-      'b4c3e4e6-9053-42ce-b747-e281314baa42',
-      'b4c3e4e6-9053-42ce-b747-e281314baa43',
-      'b4c3e4e6-9053-42ce-b747-e281314baa44'
+      'b4c3e4e6-9053-42ce-b747-e281314baa41'
     ],
     type: 'drive'
   },
@@ -81,8 +73,7 @@ const mockPoints = [
     offers: [
       'b4c3e4e6-9053-42ce-b747-e281314baa45',
       'b4c3e4e6-9053-42ce-b747-e281314baa46',
-      'b4c3e4e6-9053-42ce-b747-e281314baa47',
-      'b4c3e4e6-9053-42ce-b747-e281314baa48'
+      'b4c3e4e6-9053-42ce-b747-e281314baa47'
     ],
     type: 'flight'
   },
@@ -94,9 +85,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e07',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa49',
-      'b4c3e4e6-9053-42ce-b747-e281314baa50',
-      'b4c3e4e6-9053-42ce-b747-e281314baa51'
+      'b4c3e4e6-9053-42ce-b747-e281314baa49'
     ],
     type: 'check-in'
   },
@@ -108,8 +97,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e08',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa52',
-      'b4c3e4e6-9053-42ce-b747-e281314baa53'
+      'b4c3e4e6-9053-42ce-b747-e281314baa52'
     ],
     type: 'sightseeing'
   },
@@ -121,9 +109,7 @@ const mockPoints = [
     destination: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e09',
     isFavorite: getRandomBoolean(),
     offers: [
-      'b4c3e4e6-9053-42ce-b747-e281314baa54',
-      'b4c3e4e6-9053-42ce-b747-e281314baa55',
-      'b4c3e4e6-9053-42ce-b747-e281314baa56'
+      'b4c3e4e6-9053-42ce-b747-e281314baa54'
     ],
     type: 'restaurant'
   }

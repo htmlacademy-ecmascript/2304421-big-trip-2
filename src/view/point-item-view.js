@@ -10,7 +10,7 @@ function createOfferTemplate({title, price}) {
           </li>`;
 }
 
-function createRoutePointItemViewTemplate(point, destination, offers) {
+function createPointItemTemplate(point, destination, offers) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
   const { name } = destination;
   return `<li class="trip-events__item">
@@ -56,7 +56,7 @@ export default class RoutePointItemView {
   }
 
   getTemplate() {
-    return createRoutePointItemViewTemplate(this.point, this.destination, this.offers);
+    return createPointItemTemplate(this.point, this.destination, this.offers);
   }
 
   getElement() {

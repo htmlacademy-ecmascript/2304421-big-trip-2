@@ -1,32 +1,35 @@
 import { DATE_FORMAT } from '../const.js';
 import { createElement } from '../render.js';
 import { humanizeTaskDueDate } from '../utils.js';
+import { pointTypes } from '../const.js';
 
-function createNewPointViewTemplate(point, destination, offers) {
-  const { basePrice, dateFrom, dateTo, type } = point;
-  const { name, description, pictures } = destination;
-
-  const pointTypes = [
-    'taxi','bus','train','ship','drive','flight','check-in','sightseeing','restaurant'
-  ];
-
-  const typeItemsTemplate = pointTypes.map((pointType) => `
+function createEventTypesTemplate(types, currentType) {
+  return types.map((t) => `
     <div class="event__type-item">
-      <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${pointType[0].toUpperCase() + pointType.slice(1)}</label>
+      <input id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}" ${t === currentType ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${t[0].toUpperCase() + t.slice(1)}</label>
     </div>`).join('');
+}
 
-  const offersTemplate = offers.map((offer) =>`
+function createOffersTemplate(offers, point) {
+  return offers.map((offer) =>`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${point.offers.includes(offer.id) ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`).join('');
+}
 
-  const photosTemplate = pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join('');
+function createPhotosTemplate(pictures) {
+  return pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join('');
+}
+
+function createNewPointTemplate(point, destination, offers) {
+  const { basePrice, dateFrom, dateTo, type } = point;
+  const { name, description, pictures } = destination;
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -41,7 +44,7 @@ function createNewPointViewTemplate(point, destination, offers) {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${typeItemsTemplate}
+                        ${createEventTypesTemplate(pointTypes, type)}
                       </fieldset>
                     </div>
                   </div>
@@ -82,7 +85,7 @@ function createNewPointViewTemplate(point, destination, offers) {
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                      ${offersTemplate}
+                      ${createOffersTemplate(offers, point)}
                     </div>
                   </section>
 
@@ -92,7 +95,7 @@ function createNewPointViewTemplate(point, destination, offers) {
 
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photosTemplate}
+                        ${createPhotosTemplate(pictures)}
                       </div>
                     </div>
                   </section>
@@ -109,7 +112,7 @@ export default class NewPointView {
   }
 
   getTemplate() {
-    return createNewPointViewTemplate(
+    return createNewPointTemplate(
       this.point,
       this.destination,
       this.offers
