@@ -1,7 +1,6 @@
 import SortingView from '../view/sorting-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import PointItemView from '../view/point-item-view.js';
-import NewPointView from '../view/new-point-view.js';
 import { render } from '../framework/render.js';
 
 export default class BoardPresenter {
@@ -20,17 +19,19 @@ export default class BoardPresenter {
 
     render(new SortingView(), this.#boardContainer);
     render(this.#boardComponent, this.#boardContainer);
-    render(new NewPointView({
-      point: this.#boardPoints[0],
-      destination: this.#pointsModel.getDestinationById(this.#boardPoints[0].destination),
-      offers: this.#pointsModel.getOffersByType(this.#boardPoints[0].type)
-    }), this.#boardComponent.element);
 
-    for (let i = 1; i < this.#boardPoints.length; i++) {
-      render(new PointItemView({
-        point: this.#boardPoints[i],
-        destination: this.#pointsModel.getDestinationById(this.#boardPoints[i].destination),
-        offers: this.#pointsModel.getOffersByType(this.#boardPoints[i].type)}), this.#boardComponent.element);
+    for (let i = 0; i < this.#boardPoints.length; i++) {
+      this.#renderPoint(
+        this.#boardPoints[i],
+        this.#pointsModel.getDestinationById(this.#boardPoints[i].destination),
+        this.#pointsModel.getOffersByType(this.#boardPoints[i].type)
+      );
     }
+  }
+
+  #renderPoint(point, destination, offers) {
+    const pointComponent = new PointItemView({point, destination, offers});
+
+    render(pointComponent, this.#boardComponent.element);
   }
 }
