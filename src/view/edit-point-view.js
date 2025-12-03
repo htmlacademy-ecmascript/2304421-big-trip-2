@@ -1,32 +1,35 @@
 import { DATE_FORMAT } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeTaskDueDate } from '../utils.js';
+import { pointTypes } from '../const.js';
 
-function createNewPointViewTemplate(point, destination, offers) {
-  const { basePrice, dateFrom, dateTo, type } = point;
-  const { name, description, pictures } = destination;
-
-  const pointTypes = [
-    'taxi','bus','train','ship','drive','flight','check-in','sightseeing','restaurant'
-  ];
-
-  const typeItemsTemplate = pointTypes.map((pointType) => `
+function createEventTypesTemplate(types, currentType) {
+  return types.map((t) => `
     <div class="event__type-item">
-      <input id="event-type-${pointType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${pointType}" ${pointType === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${pointType}" for="event-type-${pointType}-1">${pointType[0].toUpperCase() + pointType.slice(1)}</label>
+      <input id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}" ${t === currentType ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${t[0].toUpperCase() + t.slice(1)}</label>
     </div>`).join('');
+}
 
-  const offersTemplate = offers.map((offer) =>`
+function createOffersTemplate(offers, point) {
+  return offers.map((offer) =>`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${point.offers.includes(offer.id) ? 'checked' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`).join('');
+}
 
-  const photosTemplate = pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join('');
+function createPhotosTemplate(pictures) {
+  return pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join('');
+}
+
+function createEditPointTemplate(point, destination, offers) {
+  const { basePrice, dateFrom, dateTo, type } = point;
+  const { name, description, pictures } = destination;
 
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -41,7 +44,7 @@ function createNewPointViewTemplate(point, destination, offers) {
                     <div class="event__type-list">
                       <fieldset class="event__type-group">
                         <legend class="visually-hidden">Event type</legend>
-                        ${typeItemsTemplate}
+                        ${createEventTypesTemplate(pointTypes, type)}
                       </fieldset>
                     </div>
                   </div>
@@ -76,13 +79,15 @@ function createNewPointViewTemplate(point, destination, offers) {
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Cancel</button>
+                  <button class="event__rollup-btn" type="button">
+                    <span class="visually-hidden">Open event</span>
                 </header>
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                     <div class="event__available-offers">
-                      ${offersTemplate}
+                      ${createOffersTemplate(offers, point)}
                     </div>
                   </section>
 
@@ -92,7 +97,7 @@ function createNewPointViewTemplate(point, destination, offers) {
 
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
-                        ${photosTemplate}
+                        ${createPhotosTemplate(pictures)}
                       </div>
                     </div>
                   </section>
@@ -101,30 +106,40 @@ function createNewPointViewTemplate(point, destination, offers) {
             </li>`;
 }
 
-export default class NewPointView {
-  constructor({ point, destination, offers }) {
-    this.point = point;
-    this.destination = destination;
-    this.offers = offers;
+export default class EditPointView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+  #handleFormSubmit = null;
+  #handleRollUpBtnClick = null;
+
+  constructor({ point, destination, offers, onFormSubmit, onRollUpBtnClick }) {
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleRollUpBtnClick = onRollUpBtnClick;
+
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpBtnClickHandler);
   }
 
-  getTemplate() {
-    return createNewPointViewTemplate(
-      this.point,
-      this.destination,
-      this.offers
+  get template() {
+    return createEditPointTemplate(
+      this.#point,
+      this.#destination,
+      this.#offers
     );
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #rollUpBtnClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleRollUpBtnClick();
+  };
 }
