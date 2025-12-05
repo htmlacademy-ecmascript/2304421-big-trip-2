@@ -5,10 +5,10 @@ import { render, replace } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 
 export default class BoardPresenter {
-  #boardComponent = new TripEventsListView();
+  #tripEventListComponent = new TripEventsListView();
   #boardContainer = null;
   #pointsModel = null;
-  #boardPoints = null;
+  #AllPoints = [];
 
   constructor({boardContainer, pointsModel}) {
     this.#boardContainer = boardContainer;
@@ -16,25 +16,25 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#boardPoints = [...this.#pointsModel.getPoints()];
+    this.#AllPoints = [...this.#pointsModel.getPoints()];
 
     render(new SortingView(), this.#boardContainer);
-    render(this.#boardComponent, this.#boardContainer);
+    render(this.#tripEventListComponent, this.#boardContainer);
 
-    for (let i = 0; i < this.#boardPoints.length; i++) {
+    this.#AllPoints.forEach((point) => {
       this.#renderPoint(
-        this.#boardPoints[i],
-        this.#pointsModel.getDestinationById(this.#boardPoints[i].destination),
-        this.#pointsModel.getOffersByType(this.#boardPoints[i].type)
+        point,
+        this.#pointsModel.getDestinationById(point.destination),
+        this.#pointsModel.getOffersByType(point.type)
       );
-    }
+    });
   }
 
   #renderPoint(point, destination, offers) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
-        replaceFormToCard();
+        replaceFormToPointItem();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
@@ -44,7 +44,7 @@ export default class BoardPresenter {
       destination,
       offers,
       onRollDownBtnClick: () => {
-        replaceCardToForm();
+        replacePointItemToForm();
         document.addEventListener('keydown', escKeyDownHandler);
       }
     });
@@ -54,23 +54,23 @@ export default class BoardPresenter {
       destination,
       offers,
       onFormSubmit: () => {
-        replaceFormToCard();
+        replaceFormToPointItem();
         document.removeEventListener('keydown', escKeyDownHandler);
       },
       onRollUpBtnClick: () => {
-        replaceFormToCard();
+        replaceFormToPointItem();
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     });
 
-    function replaceCardToForm() {
+    function replacePointItemToForm() {
       replace(editPointComponent, pointComponent);
     }
 
-    function replaceFormToCard() {
+    function replaceFormToPointItem() {
       replace(pointComponent, editPointComponent);
     }
 
-    render(pointComponent, this.#boardComponent.element);
+    render(pointComponent, this.#tripEventListComponent.element);
   }
 }

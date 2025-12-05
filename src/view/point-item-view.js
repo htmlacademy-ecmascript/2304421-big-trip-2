@@ -49,9 +49,9 @@ function createPointItemTemplate(point, destination, offers) {
 }
 
 export default class PointItemView extends AbstractView {
-  #point = null;
+  #point = {};
   #destination = null;
-  #offers = null;
+  #offers = [];
   #handleRollDownBtnClick = null;
 
   constructor({ point, destination, offers, onRollDownBtnClick }) {

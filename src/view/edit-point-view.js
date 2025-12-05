@@ -4,17 +4,23 @@ import { humanizeTaskDueDate } from '../utils.js';
 import { pointTypes } from '../const.js';
 
 function createEventTypesTemplate(types, currentType) {
-  return types.map((t) => `
+  function getCheckedTypeAttribute(type) {
+    return type === currentType ? 'checked' : '';
+  }
+  return types.map((type) => `
     <div class="event__type-item">
-      <input id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}" ${t === currentType ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${t[0].toUpperCase() + t.slice(1)}</label>
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${getCheckedTypeAttribute(type)}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
     </div>`).join('');
 }
 
 function createOffersTemplate(offers, point) {
+  function getCheckedOfferAttribute(offer) {
+    return point.offers.includes(offer.id) ? 'checked' : '';
+  }
   return offers.map((offer) =>`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${point.offers.includes(offer.id) ? 'checked' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${getCheckedOfferAttribute(offer)}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -81,6 +87,7 @@ function createEditPointTemplate(point, destination, offers) {
                   <button class="event__reset-btn" type="reset">Cancel</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
+                  </button>
                 </header>
                 <section class="event__details">
                   <section class="event__section  event__section--offers">
