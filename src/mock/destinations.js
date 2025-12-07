@@ -1,4 +1,4 @@
-export const mockDestinations = [
+const mockDestinations = [
   {
     id: 'bfa5cb75-a1fe-4b77-a83c-0e528e910e01',
     description: 'Chamonix, is a beautiful city, a true asian pearl, with crowded streets.',
@@ -99,3 +99,7 @@ export const mockDestinations = [
     ]
   }
 ];
+
+export function getDestinations() {
+  return mockDestinations;
+}

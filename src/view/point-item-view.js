@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDifferenceInTime, humanizeTaskDueDate } from '../utils.js';
 import { DATE_FORMAT } from '../const.js';
 
@@ -10,7 +10,7 @@ function createOfferTemplate({title, price}) {
           </li>`;
 }
 
-function createRoutePointItemViewTemplate(point, destination, offers) {
+function createPointItemTemplate(point, destination, offers) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
   const { name } = destination;
   return `<li class="trip-events__item">
@@ -48,26 +48,28 @@ function createRoutePointItemViewTemplate(point, destination, offers) {
             </li>`;
 }
 
-export default class RoutePointItemView {
-  constructor({point, destination, offers}) {
-    this.point = point;
-    this.destination = destination;
-    this.offers = offers;
+export default class PointItemView extends AbstractView {
+  #point = null;
+  #destination = null;
+  #offers = null;
+  #handleRollDownBtnClick = null;
+
+  constructor({ point, destination, offers, onRollDownBtnClick }) {
+    super();
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleRollDownBtnClick = onRollDownBtnClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollDownBtnHandler);
   }
 
-  getTemplate() {
-    return createRoutePointItemViewTemplate(this.point, this.destination, this.offers);
+  get template() {
+    return createPointItemTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #rollDownBtnHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleRollDownBtnClick();
+  };
 }
