@@ -3,13 +3,19 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import PointItemView from '../view/point-item-view.js';
 import { render, replace } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
+import ListEmptyView from '../view/list-empty-view.js';
+import TripInfoView from '../view/trip-info-view.js';
+import { sortTypes } from '../const.js';
+
+const tripMainElement = document.querySelector('.trip-main');
+
 
 export default class BoardPresenter {
   #tripEventListComponent = new TripEventsListView();
   #boardContainer = null;
   #pointsModel = null;
-  #AllPoints = [];
-  #currentSort = 'day';
+  #allPoints = [];
+  #currentSort = sortTypes[0].type;
 
   constructor({boardContainer, pointsModel}) {
     this.#boardContainer = boardContainer;
@@ -17,8 +23,14 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#AllPoints = [...this.#pointsModel.getPoints()];
+    this.#allPoints = [...this.#pointsModel.getPoints()];
 
+    if(this.#allPoints.length === 0) {
+      render(new ListEmptyView(), this.#boardContainer);
+      return;
+    }
+
+    render(new TripInfoView(), tripMainElement, 'afterbegin');
     this.#renderAllPoints();
   }
 
@@ -70,7 +82,7 @@ export default class BoardPresenter {
     render(new SortingView(this.#currentSort), this.#boardContainer);
     render(this.#tripEventListComponent, this.#boardContainer);
 
-    this.#AllPoints.forEach((point) => {
+    this.#allPoints.forEach((point) => {
       this.#renderPoint(
         point,
         this.#pointsModel.getDestinationById(point.destination),

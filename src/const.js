@@ -1,4 +1,4 @@
-export const POINT_COUNT = 4;
+export const POINT_COUNT = 10;
 export const pointTypes = [
   'taxi','bus','train','ship','drive','flight','check-in','sightseeing','restaurant'
 ];
@@ -7,11 +7,11 @@ export const filterTypes = [
 ];
 
 export const sortTypes = [
-  'day', 'event', 'time', 'price', 'offers'
-];
-
-export const disabledSorts = [
-  'event', 'offers'
+  { type: 'day', disabled: false },
+  { type: 'event', disabled: true },
+  { type: 'time', disabled: false },
+  { type: 'price', disabled: false },
+  { type: 'offers', disabled: true }
 ];
 
 export const DATE_FORMAT = {
