@@ -5,6 +5,10 @@ import ListEmptyView from '../view/list-empty-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import { sortTypes } from '../const.js';
 import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils.js';
+import { SortType } from '../const.js';
+import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
+
 
 const tripMainElement = document.querySelector('.trip-main');
 
@@ -16,6 +20,8 @@ export default class BoardPresenter {
   #allPoints = [];
   #currentSort = sortTypes[0].type;
   #pointPresenters = new Map();
+  #sortComponent = null;
+  #sourсedBoardPoints = [];
 
   constructor({boardContainer, pointsModel}) {
     this.#boardContainer = boardContainer;
@@ -24,6 +30,7 @@ export default class BoardPresenter {
 
   init() {
     this.#allPoints = [...this.#pointsModel.getPoints()];
+    this.#sourсedBoardPoints = [...this.#pointsModel.getPoints()];
 
     if(this.#allPoints.length === 0) {
       render(new ListEmptyView(), this.#boardContainer);
@@ -31,6 +38,8 @@ export default class BoardPresenter {
     }
 
     render(new TripInfoView(), tripMainElement, 'afterbegin');
+    this.#renderSort();
+    render(this.#tripEventListComponent, this.#boardContainer);
     this.#renderAllPoints();
   }
 
@@ -38,9 +47,49 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
+  #sortPoints(sortType) {
+    if (sortType === SortType.DAY) {
+      this.#allPoints.sort(sortByDay);
+    } else if (sortType === SortType.TIME) {
+      this.#allPoints.sort(sortByTime);
+    } else if (sortType === SortType.PRICE) {
+      this.#allPoints.sort(sortByPrice);
+    }
+  }
+
+  #clearBoard() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+    this.#tripEventListComponent.element.innerHTML = '';
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSort === sortType) {
+      return;
+    }
+
+    this.#currentSort = sortType;
+
+    if (sortType === SortType.DAY) {
+      this.#allPoints = [...this.#sourсedBoardPoints];
+    }
+
+    if (sortType === SortType.TIME) {
+      this.#allPoints.sort(sortByTime);
+    } else if (sortType === SortType.PRICE) {
+      this.#allPoints.sort(sortByPrice);
+    }
+
+    this.#clearBoard();
+    this.#renderAllPoints();
+  };
+
+  #renderSort() {
+    this.#sortComponent = new SortingView(this.#currentSort, {onSortTypeChange: this.#handleSortTypeChange});
+    render(this.#sortComponent, this.#boardContainer);
+  }
+
   #renderAllPoints() {
-    render(new SortingView(this.#currentSort), this.#boardContainer);
-    render(this.#tripEventListComponent, this.#boardContainer);
 
     this.#allPoints.forEach((point) => {
       const pointPresenter = new PointPresenter ({
@@ -60,8 +109,8 @@ export default class BoardPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#allPoints = this.#allPoints.map((point) =>
-      point.id === updatedPoint.id ? updatedPoint : point);
+    this.#allPoints = updateItem(this.#allPoints, updatedPoint);
+    this.#sourсedBoardPoints = updateItem(this.#sourсedBoardPoints, updatedPoint);
 
     this.#pointPresenters.get(updatedPoint.id).init({
       point: updatedPoint,
