@@ -14,8 +14,15 @@ export const sortTypes = [
   { type: 'offers', disabled: true }
 ];
 
+export const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price'
+};
+
 export const DATE_FORMAT = {
   monthDay: 'MMM D',
   hour: 'HH:mm',
   dayMonthYearTime: 'DD/MM/YY HH:mm'
 };
+
