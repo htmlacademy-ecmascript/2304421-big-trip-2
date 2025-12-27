@@ -18,7 +18,7 @@ function createTripSortTemplate(currentSort) {
   return sortTypes.map(({ type, disabled }) =>
     `<div class="trip-sort__item  trip-sort__item--${type}">
       <input id="sort-${type}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="${type}" ${isChecked(type)} ${isDisabled(disabled)}>
-      <label class="trip-sort__btn" for="sort-${type}">${toCapitalLetter(type)}</label>
+      <label class="trip-sort__btn" for="sort-${type}" data-sort-type="${type}">${toCapitalLetter(type)}</label>
     </div>`).join('');
 }
 
@@ -30,14 +30,28 @@ function createSortingViewTemplate(currentSort) {
 
 export default class SortingView extends AbstractView {
   #currentSort = null;
+  #handleSortTypeChange = null;
 
-  constructor(currentSort = sortTypes[0].type) {
+  constructor(currentSort = sortTypes[0].type, {onSortTypeChange}) {
     super();
     this.#currentSort = currentSort;
+    this.#handleSortTypeChange = onSortTypeChange;
+
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   get template() {
     return createSortingViewTemplate(this.#currentSort);
   }
+
+  #sortTypeChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    evt.preventDefault();
+    this.#handleSortTypeChange(evt.target.value);
+  };
+
 }
 
