@@ -26,3 +26,8 @@ export const DATE_FORMAT = {
   dayMonthYearTime: 'DD/MM/YY HH:mm'
 };
 
+export const defaultDatepickerOptions = {
+  enableTime: true,
+  dateFormat: 'd.m.Y H:i'
+};
+

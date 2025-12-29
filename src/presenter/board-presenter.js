@@ -4,9 +4,9 @@ import { render } from '../framework/render.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter.js';
-import { updateItem } from '../utils.js';
 import { SortType } from '../const.js';
-import { sortByPrice, sortByTime } from '../utils.js';
+import { sortByDay, sortByPrice, sortByTime, updateItem } from '../utils.js';
+import { remove } from '../framework/render.js';
 
 
 const tripMainElement = document.querySelector('.trip-main');
@@ -28,8 +28,8 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#allPoints = [...this.#pointsModel.getPoints()];
     this.#sourcedBoardPoints = [...this.#pointsModel.getPoints()];
+    this.#allPoints = [...this.#pointsModel.getPoints()].sort(sortByDay);
 
     if(this.#allPoints.length === 0) {
       render(new ListEmptyView(), this.#boardContainer);
@@ -49,6 +49,11 @@ export default class BoardPresenter {
   #clearBoard() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+
+    remove(this.#tripEventListComponent);
+    this.#tripEventListComponent = new TripEventsListView();
+
+    render(this.#tripEventListComponent, this.#boardContainer);
   }
 
   #handleSortTypeChange = (sortType) => {
@@ -60,7 +65,7 @@ export default class BoardPresenter {
 
     switch (sortType) {
       case SortType.DAY:
-        this.#allPoints = [...this.#sourcedBoardPoints];
+        this.#allPoints = [...this.#sourcedBoardPoints].sort(sortByDay);
         break;
 
       case SortType.TIME:
@@ -77,7 +82,11 @@ export default class BoardPresenter {
   };
 
   #renderSort() {
-    this.#sortComponent = new SortingView(this.#currentSort, {onSortTypeChange: this.#handleSortTypeChange});
+    if (this.#sortComponent) {
+      remove(this.#sortComponent);
+    }
+
+    this.#sortComponent = new SortingView(this.#currentSort, this.#handleSortTypeChange);
     render(this.#sortComponent, this.#boardContainer);
   }
 

@@ -3,6 +3,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils.js';
 import { pointTypes } from '../const.js';
 import flatpickr from 'flatpickr';
+import { defaultDatepickerOptions } from '../const.js';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -202,8 +203,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {
-        enableTime: true,
-        dateFormat: 'd.m.Y H:i',
+        ...defaultDatepickerOptions,
         defaultDate: this._state.point.dateFrom,
         onChange: this.#dateFromChangeHandler,
       },
@@ -212,8 +212,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#datepickerTo = flatpickr(
       this.element.querySelector('#event-end-time-1'),
       {
-        enableTime: true,
-        dateFormat: 'd.m.Y H:i',
+        ...defaultDatepickerOptions,
         defaultDate: this._state.point.dateTo,
         onChange: this.#dateToChangeHandler,
       },
