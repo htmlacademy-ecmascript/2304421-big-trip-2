@@ -206,6 +206,7 @@ export default class EditPointView extends AbstractStatefulView {
         ...defaultDatepickerOptions,
         defaultDate: this._state.point.dateFrom,
         onChange: this.#dateFromChangeHandler,
+        maxDate: this._state.point.dateTo
       },
     );
 
@@ -215,11 +216,9 @@ export default class EditPointView extends AbstractStatefulView {
         ...defaultDatepickerOptions,
         defaultDate: this._state.point.dateTo,
         onChange: this.#dateToChangeHandler,
+        minDate: this._state.point.dateFrom
       },
     );
-
-    this.#datepickerTo.set('minDate', this._state.point.dateFrom);
-    this.#datepickerFrom.set('maxDate', this._state.point.dateTo);
   }
 
 
