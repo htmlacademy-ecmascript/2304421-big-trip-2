@@ -46,16 +46,6 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  // #sortPoints(sortType) {
-  //   if (sortType === SortType.DAY) {
-  //     this.#allPoints.sort(sortByDay);
-  //   } else if (sortType === SortType.TIME) {
-  //     this.#allPoints.sort(sortByTime);
-  //   } else if (sortType === SortType.PRICE) {
-  //     this.#allPoints.sort(sortByPrice);
-  //   }
-  // }
-
   #clearBoard() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
@@ -105,7 +95,9 @@ export default class BoardPresenter {
       pointPresenter.init({
         point,
         destination: this.#pointsModel.getDestinationById(point.destination),
-        offers: this.#pointsModel.getOffersByType(point.type)
+        offers: this.#pointsModel.getOffersByType(point.type),
+        allDestinations: this.#pointsModel.getDestinations(),
+        allOffersByType: this.#pointsModel.getAllOffers()
       });
     });
   }
@@ -117,7 +109,9 @@ export default class BoardPresenter {
     this.#pointPresenters.get(updatedPoint.id).init({
       point: updatedPoint,
       destination: this.#pointsModel.getDestinationById(updatedPoint.destination),
-      offers: this.#pointsModel.getOffersByType(updatedPoint.type)
+      offers: this.#pointsModel.getOffersByType(updatedPoint.type),
+      allDestinations: this.#pointsModel.getDestinations(),
+      allOffersByType: this.#pointsModel.getAllOffers()
     });
   };
 }

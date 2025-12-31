@@ -1,5 +1,5 @@
 import { DATE_FORMAT } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeTaskDueDate } from '../utils.js';
 import { pointTypes } from '../const.js';
 
@@ -33,7 +33,11 @@ function createPhotosTemplate(pictures) {
   return pictures.map((pic) => `<img class="event__photo" src="${pic.src}" alt="${pic.description}">`).join('');
 }
 
-function createEditPointTemplate(point, destination, offers) {
+function createDestinationTemplate(destinations) {
+  return destinations.map((destination) => `<option value="${destination.name}"></option>`).join('');
+}
+
+function createEditPointTemplate(point, destination, offers, allDestinations) {
   const { basePrice, dateFrom, dateTo, type } = point;
   const { name, description, pictures } = destination;
 
@@ -61,9 +65,7 @@ function createEditPointTemplate(point, destination, offers) {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      <option value="Amsterdam"></option>
-                      <option value="Geneva"></option>
-                      <option value="Chamonix"></option>
+                      ${createDestinationTemplate(allDestinations)}
                     </datalist>
                   </div>
 
@@ -113,40 +115,103 @@ function createEditPointTemplate(point, destination, offers) {
             </li>`;
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
-  #destination = null;
-  #offers = [];
+export default class EditPointView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleRollUpBtnClick = null;
 
-  constructor({ point, destination, offers, onFormSubmit, onRollUpBtnClick }) {
+  constructor({ point, destination, offers, allDestinations, allOffersByType, onFormSubmit, onRollUpBtnClick }) {
     super();
-    this.#point = point;
-    this.#destination = destination;
-    this.#offers = offers;
+    this._setState(EditPointView.parsePointToState(point, destination, offers, allDestinations, allOffersByType));
+
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRollUpBtnClick = onRollUpBtnClick;
 
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpBtnClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEditPointTemplate(
-      this.#point,
-      this.#destination,
-      this.#offers
-    );
+    const { point, destination, offers, allDestinations } = this._state;
+    return createEditPointTemplate(point, destination, offers, allDestinations);
   }
+
+  _restoreHandlers() {
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpBtnClickHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#rollUpBtnClickHandler);
+  }
+
+  #getOffersByType(type) {
+    const offerSet = this._state.allOffersByType.find(
+      (item) => item.type === type
+    );
+
+    return offerSet ? offerSet.offers : [];
+  }
+
+
+  #typeChangeHandler = (evt) => {
+    if (evt.target.name !== 'event-type') {
+      return;
+    }
+
+    const newType = evt.target.value;
+
+    const offers = this.#getOffersByType(newType);
+
+
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        type: newType,
+        offers: []
+      },
+      offers
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    const newDestination = this._state.allDestinations
+      .find((dest) => dest.name === evt.target.value);
+
+    if (!newDestination) {
+      return;
+    }
+
+    this.updateElement({
+      destination: newDestination,
+      point: {
+        ...this._state.point,
+        destination: newDestination.id
+      }
+    });
+  };
+
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
   #rollUpBtnClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleRollUpBtnClick();
   };
+
+  static parsePointToState(point, destination, offers, allDestinations, allOffersByType) {
+    return {
+      point,
+      destination,
+      offers,
+      allDestinations,
+      allOffersByType
+    };
+  }
+
+  static parseStateToPoint(state) {
+    return {
+      ...state.point
+    };
+  }
 }

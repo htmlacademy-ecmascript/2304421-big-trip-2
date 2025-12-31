@@ -20,4 +20,12 @@ export default class PointsModel {
     const offerSet = this.#offers.find((offer) => offer.type === type);
     return offerSet ? offerSet.offers : [];
   }
+
+  getDestinations() {
+    return this.#destinations;
+  }
+
+  getAllOffers() {
+    return this.#offers;
+  }
 }
