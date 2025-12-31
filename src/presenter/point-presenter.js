@@ -108,7 +108,6 @@ export default class PointPresenter {
       isFavorite: !this.#point.isFavorite
     };
 
-    this.#point = updatedPoint;
     this.#handleDataChange(updatedPoint);
   };
 

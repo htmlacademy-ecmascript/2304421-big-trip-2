@@ -32,7 +32,7 @@ export default class SortingView extends AbstractView {
   #currentSort = null;
   #handleSortTypeChange = null;
 
-  constructor(currentSort = sortTypes[0].type, {onSortTypeChange}) {
+  constructor(currentSort = sortTypes[0].type, onSortTypeChange) {
     super();
     this.#currentSort = currentSort;
     this.#handleSortTypeChange = onSortTypeChange;
