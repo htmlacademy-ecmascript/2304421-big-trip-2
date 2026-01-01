@@ -4,8 +4,8 @@ import { render } from '../framework/render.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter.js';
-import { SortType } from '../const.js';
-import { sortByDay, sortByPrice, sortByTime, updateItem } from '../utils.js';
+import { POINT_COUNT, SortType, UpdateType, UserAction } from '../const.js';
+import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { remove } from '../framework/render.js';
 
 
@@ -16,22 +16,34 @@ export default class BoardPresenter {
   #tripEventListComponent = new TripEventsListView();
   #boardContainer = null;
   #pointsModel = null;
-  #allPoints = [];
   #currentSort = SortType.DAY;
   #pointPresenters = new Map();
   #sortComponent = null;
-  #sourcedBoardPoints = [];
 
   constructor({boardContainer, pointsModel}) {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
+
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+  }
+
+  get points() {
+    switch (this.#currentSort) {
+      case SortType.DAY:
+        return [...this.#pointsModel.getPoints()].sort(sortByDay);
+
+      case SortType.TIME:
+        return [...this.#pointsModel.getPoints()].sort(sortByTime);
+
+      case SortType.PRICE:
+        return [...this.#pointsModel.getPoints()].sort(sortByPrice);
+    }
+    return this.#pointsModel.getPoints();
   }
 
   init() {
-    this.#sourcedBoardPoints = [...this.#pointsModel.getPoints()];
-    this.#allPoints = [...this.#pointsModel.getPoints()].sort(sortByDay);
 
-    if(this.#allPoints.length === 0) {
+    if(this.#pointsModel.getPoints().length === 0) {
       render(new ListEmptyView(), this.#boardContainer);
       return;
     }
@@ -46,15 +58,46 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #clearBoard() {
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
 
-    remove(this.#tripEventListComponent);
-    this.#tripEventListComponent = new TripEventsListView();
+      case UserAction.ADD_POINT:
+        this.#pointsModel.addPoint(updateType, update);
+        break;
 
-    render(this.#tripEventListComponent, this.#boardContainer);
-  }
+      case UserAction.DELETE_POINT:
+        this.#pointsModel.deletePoint(updateType, update);
+        break;
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init({
+        point: data,
+        destination: this.#pointsModel.getDestinationById(data.destination),
+        offers: this.#pointsModel.getOffersByType(data.type),
+        allDestinations: this.#pointsModel.getDestinations(),
+        allOffersByType: this.#pointsModel.getAllOffers()
+        });
+        break;
+
+
+      case UpdateType.MINOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+
+      case UpdateType.MAJOR:
+        this.#clearBoard({resetRenderedPointCount: true, resetSortType: true});
+        this.#renderBoard();
+        break;
+    }
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSort === sortType) {
@@ -63,22 +106,8 @@ export default class BoardPresenter {
 
     this.#currentSort = sortType;
 
-    switch (sortType) {
-      case SortType.DAY:
-        this.#allPoints = [...this.#sourcedBoardPoints].sort(sortByDay);
-        break;
-
-      case SortType.TIME:
-        this.#allPoints = [...this.#sourcedBoardPoints].sort(sortByTime);
-        break;
-
-      case SortType.PRICE:
-        this.#allPoints = [...this.#sourcedBoardPoints].sort(sortByPrice);
-        break;
-    }
-
-    this.#clearBoard();
-    this.#renderAllPoints();
+    this.#clearBoard({resetRenderedPointCount: true});
+    this.#renderBoard();
   };
 
   #renderSort() {
@@ -90,12 +119,24 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer);
   }
 
+  #clearBoard({resetRenderedPointCount = false, resetSortType = false} = {}) {
+  this.#pointPresenters.forEach((presenter) => presenter.destroy());
+  this.#pointPresenters.clear();
+
+  remove(this.#sortComponent);
+
+  if (resetSortType) {
+    this.#currentSort = SortType.DAY;
+  }
+}
+
+
   #renderAllPoints() {
 
-    this.#allPoints.forEach((point) => {
+    this.points.forEach((point) => {
       const pointPresenter = new PointPresenter ({
         pointListContainer: this.#tripEventListComponent.element,
-        onDataChange: this.#handlePointChange,
+        onDataChange: this.#handleViewAction,
         onModeChange: this.#handleModeChange
       });
 
@@ -112,8 +153,6 @@ export default class BoardPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#allPoints = updateItem(this.#allPoints, updatedPoint);
-    this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
 
     this.#pointPresenters.get(updatedPoint.id).init({
       point: updatedPoint,

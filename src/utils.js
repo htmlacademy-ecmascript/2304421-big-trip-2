@@ -40,4 +40,12 @@ function sortByPrice(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
 
+export const pointFilter = {
+  everything: (points) => points,
+  future: (points) => points.filter((point) => point.dateFrom > Date.now()),
+  present: (points) => points.filter((point) => point.dateFrom <= Date.now() <= point.dateTo),
+  past: (points) => points.filter((point) => point.dateTo < Date.now()),
+};
+
+
 export { sortByDay, sortByPrice, sortByTime, getRandomArrayElement, humanizeTaskDueDate, getDifferenceInTime, getRandomBoolean, updateItem };
