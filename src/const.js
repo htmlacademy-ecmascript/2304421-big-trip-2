@@ -6,6 +6,13 @@ export const filterTypes = [
   'everything', 'future', 'present', 'past'
 ];
 
+export const NoPointsTextType = {
+  everything: 'Click New Event to create your first point',
+  future: 'There are no points about the future',
+  present: 'There are no points about the present',
+  past: 'There are no points about the past'
+};
+
 export const sortTypes = [
   { type: 'day', disabled: false },
   { type: 'event', disabled: true },
