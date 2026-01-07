@@ -90,7 +90,7 @@ function createEditPointTemplate(point, destination, offers, allDestinations) {
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Delete</button>
+                  <button class="event__reset-btn" type="button">Delete</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -124,13 +124,16 @@ export default class EditPointView extends AbstractStatefulView {
   #handleRollUpBtnClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleDeleteClick = null;
 
-  constructor({ point, destination, offers, allDestinations, allOffersByType, onFormSubmit, onRollUpBtnClick }) {
+
+  constructor({ point, destination, offers, allDestinations, allOffersByType, onFormSubmit, onRollUpBtnClick, onDeleteClick }) {
     super();
     this._setState(EditPointView.parsePointToState(point, destination, offers, allDestinations, allOffersByType));
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRollUpBtnClick = onRollUpBtnClick;
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -172,7 +175,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpBtnClickHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#rollUpBtnClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.#setDatepicker();
   }
 
@@ -282,6 +285,12 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     this.#handleRollUpBtnClick();
   };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(this._state.point);
+  };
+
 
   static parsePointToState(point, destination, offers, allDestinations, allOffersByType) {
     return {
