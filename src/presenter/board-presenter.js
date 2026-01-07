@@ -4,7 +4,7 @@ import { render } from '../framework/render.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter.js';
-import { POINT_COUNT, SortType, UpdateType, UserAction, filterTypes } from '../const.js';
+import { SortType, UpdateType, UserAction, filterTypes } from '../const.js';
 import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
 import { remove } from '../framework/render.js';
 import { pointFilter } from '../utils.js';
@@ -21,6 +21,8 @@ export default class BoardPresenter {
   #pointPresenters = new Map();
   #sortComponent = null;
   #filterModel = null;
+  #noPointComponent = null;
+  #filterType = filterTypes.EVERYTHING;
 
   constructor({boardContainer, pointsModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -32,31 +34,32 @@ export default class BoardPresenter {
   }
 
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.getPoints();
-    const filteredPoints = pointFilter[filterType](points);
+    const filteredPoints = pointFilter[this.#filterType](points);
 
     switch (this.#currentSort) {
       case SortType.DAY:
-        return filteredPoints.sort(sortByDay);
+        return [...filteredPoints].sort(sortByDay);
 
       case SortType.TIME:
-        return filteredPoints.sort(sortByTime);
+        return [...filteredPoints].sort(sortByTime);
 
       case SortType.PRICE:
-        return filteredPoints.sort(sortByPrice);
+        return [...filteredPoints].sort(sortByPrice);
     }
     return filteredPoints;
   }
 
   init() {
 
-    if(this.#pointsModel.getPoints().length === 0) {
-      render(new ListEmptyView(), this.#boardContainer);
+    render(new TripInfoView(), tripMainElement, 'afterbegin');
+
+    if (this.points.length === 0) {
+      this.#renderNoPoints();
       return;
     }
 
-    render(new TripInfoView(), tripMainElement, 'afterbegin');
     this.#renderSort();
     render(this.#tripEventListComponent, this.#boardContainer);
     this.#renderAllPoints();
@@ -101,7 +104,7 @@ export default class BoardPresenter {
         break;
 
       case UpdateType.MAJOR:
-        this.#clearBoard({resetRenderedPointCount: true, resetSortType: true});
+        this.#clearBoard({resetSortType: true});
         this.#renderAllPoints();
         break;
     }
@@ -114,9 +117,17 @@ export default class BoardPresenter {
 
     this.#currentSort = sortType;
 
-    this.#clearBoard({resetRenderedPointCount: true});
+    this.#clearBoard({ resetSortType: true });
     this.#renderAllPoints();
   };
+
+  #renderNoPoints() {
+    this.#noPointComponent = new ListEmptyView({
+      currentFilterType: this.#filterType
+    });
+
+    render(this.#noPointComponent, this.#boardContainer);
+  }
 
   #renderSort() {
     if (this.#sortComponent) {
@@ -127,19 +138,31 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer);
   }
 
-  #clearBoard({resetRenderedPointCount = false, resetSortType = false} = {}) {
+  #clearBoard({ resetSortType = false } = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#tripEventListComponent);
+
+    this.#tripEventListComponent = new TripEventsListView();
 
     if (resetSortType) {
       this.#currentSort = SortType.DAY;
+    }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
     }
   }
 
 
   #renderAllPoints() {
+    if(this.points.length === 0) {
+      this.#renderNoPoints();
+      return;
+    }
 
     this.points.forEach((point) => {
       const pointPresenter = new PointPresenter ({
@@ -159,16 +182,5 @@ export default class BoardPresenter {
       });
     });
   }
-
-  #handlePointChange = (updatedPoint) => {
-
-    this.#pointPresenters.get(updatedPoint.id).init({
-      point: updatedPoint,
-      destination: this.#pointsModel.getDestinationById(updatedPoint.destination),
-      offers: this.#pointsModel.getOffersByType(updatedPoint.type),
-      allDestinations: this.#pointsModel.getDestinations(),
-      allOffersByType: this.#pointsModel.getAllOffers()
-    });
-  };
 }
 

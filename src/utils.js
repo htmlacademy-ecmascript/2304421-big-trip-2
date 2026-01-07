@@ -43,7 +43,7 @@ function sortByPrice(pointA, pointB) {
 export const pointFilter = {
   everything: (points) => points,
   future: (points) => points.filter((point) => point.dateFrom > Date.now()),
-  present: (points) => points.filter((point) => point.dateFrom <= Date.now() <= point.dateTo),
+  present: (points) => points.filter((point) => point.dateFrom <= Date.now() && Date.now() <= point.dateTo),
   past: (points) => points.filter((point) => point.dateTo < Date.now()),
 };
 

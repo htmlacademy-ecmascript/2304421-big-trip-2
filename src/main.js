@@ -11,7 +11,7 @@ const tripEventsElement = mainElement.querySelector('.trip-events');
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
 
-const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, pointsModel});
+const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, pointsModel, filterModel});
 const filterPresenter = new FilterPresenter({filterContainer: filtersElement, filterModel, pointsModel});
 
 filterPresenter.init();

@@ -2,9 +2,13 @@ export const POINT_COUNT = 4;
 export const pointTypes = [
   'taxi','bus','train','ship','drive','flight','check-in','sightseeing','restaurant'
 ];
-export const filterTypes = [
-  'everything', 'future', 'present', 'past'
-];
+export const filterTypes = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
 
 export const NoPointsTextType = {
   everything: 'Click New Event to create your first point',

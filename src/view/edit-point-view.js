@@ -90,7 +90,7 @@ function createEditPointTemplate(point, destination, offers, allDestinations) {
                   </div>
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-                  <button class="event__reset-btn" type="reset">Cancel</button>
+                  <button class="event__reset-btn" type="reset">Delete</button>
                   <button class="event__rollup-btn" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
@@ -153,6 +153,19 @@ export default class EditPointView extends AbstractStatefulView {
       this.#datepickerTo = null;
     }
   }
+
+  // destroyDatepickers() {
+  //   if (this.#datepickerFrom) {
+  //     this.#datepickerFrom.destroy();
+  //     this.#datepickerFrom = null;
+  //   }
+
+  //   if (this.#datepickerTo) {
+  //     this.#datepickerTo.destroy();
+  //     this.#datepickerTo = null;
+  //   }
+  // }
+
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);

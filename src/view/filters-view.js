@@ -11,7 +11,7 @@ function createTripFiltersTemplate(currentFilterType) {
     return filterType[0].toUpperCase() + filterType.slice(1);
   }
 
-  return filterTypes.map((filterType) => `
+  return Object.values(filterTypes).map((filterType) => `
     <div class="trip-filters__filter">
       <input id="filter-${filterType}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filterType}" ${isFilterChecked(filterType)}>
       <label class="trip-filters__filter-label" for="filter-${filterType}">${toCapitalLetter(filterType)}</label>
@@ -27,13 +27,26 @@ function createFiltersTemplate(currentFilterType = 'everything') {
 
 export default class FiltersView extends AbstractView {
   #currentFilter = null;
+  #handleFilterChange = null;
+  #filters = null;
 
-  constructor(currentFilter = 'everything') {
+  constructor({ filters, currentFilterType, onFilterTypeChange }) {
     super();
-    this.#currentFilter = currentFilter;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
+    this.#handleFilterChange = onFilterTypeChange;
+
+    this.element.addEventListener('change', this.#filterChangeHandler);
   }
 
   get template() {
     return createFiltersTemplate(this.#currentFilter);
   }
+
+  #filterChangeHandler = (evt) => {
+    if (evt.target.name !== 'trip-filter') {
+      return;
+    }
+    this.#handleFilterChange(evt.target.value);
+  };
 }
