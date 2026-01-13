@@ -20,7 +20,7 @@ export default class NewPointPresenter {
     }
 
     this.#editPointComponent = new EditPointView({
-      point: this.#createEmptyPoint(),
+      point: this.#createEmptyPoint(destination.id),
       destination,
       offers,
       allDestinations,
@@ -35,12 +35,12 @@ export default class NewPointPresenter {
   }
 
   destroy = () => {
-    if (this.#editPointComponent === null) {
-      return;
+    if (this.#editPointComponent) {
+      remove(this.#editPointComponent);
+      this.#editPointComponent = null;
     }
 
-    remove(this.#editPointComponent);
-    this.#editPointComponent = null;
+    // remove(this.#editPointComponent);
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#handleDestroy();
@@ -49,7 +49,7 @@ export default class NewPointPresenter {
   #handleFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       point
     );
 
@@ -63,12 +63,12 @@ export default class NewPointPresenter {
     }
   };
 
-  #createEmptyPoint() {
+  #createEmptyPoint(destinationId) {
     return {
       basePrice: 0,
       dateFrom: new Date(),
       dateTo: new Date(),
-      destination: '',
+      destination: destinationId,
       isFavorite: false,
       offers: [],
       type: 'flight'

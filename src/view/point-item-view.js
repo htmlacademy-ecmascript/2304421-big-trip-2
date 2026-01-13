@@ -12,7 +12,8 @@ function createOfferTemplate({title, price}) {
 
 function createPointItemTemplate(point, destination, offers) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
-  const { name } = destination;
+  const name = destination?.name ?? '';
+
   return `<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="${dateFrom}">${humanizeTaskDueDate(dateFrom, DATE_FORMAT.monthDay)}</time>
