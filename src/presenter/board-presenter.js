@@ -81,9 +81,6 @@ export default class BoardPresenter {
   }
 
   #handleNewPointClick = () => {
-    // if (this.#newPointPresenter.isActive()) {
-    //   return;
-    // }
     this.#handleModeChange();
     this.#filterModel.setFilter(UpdateType.MINOR, filterTypes.EVERYTHING);
     this.#currentSort = SortType.DAY;
@@ -195,10 +192,6 @@ export default class BoardPresenter {
       remove(this.#noPointComponent);
       this.#noPointComponent = null;
     }
-
-    // if (this.#newPointPresenter) {
-    //   this.#newPointPresenter.destroy();
-    // }
   }
 
 

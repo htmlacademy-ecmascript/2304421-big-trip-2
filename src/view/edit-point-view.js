@@ -158,19 +158,6 @@ export default class EditPointView extends AbstractStatefulView {
     }
   }
 
-  // destroyDatepickers() {
-  //   if (this.#datepickerFrom) {
-  //     this.#datepickerFrom.destroy();
-  //     this.#datepickerFrom = null;
-  //   }
-
-  //   if (this.#datepickerTo) {
-  //     this.#datepickerTo.destroy();
-  //     this.#datepickerTo = null;
-  //   }
-  // }
-
-
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollUpBtnClickHandler);
