@@ -10,6 +10,7 @@ import { remove } from '../framework/render.js';
 import { pointFilter } from '../utils.js';
 import NewPointPresenter from './new-point-presenter.js';
 import NewPointButtonView from '../view/new-point-button-view.js';
+import LoadingView from '../view/loading-view.js';
 
 
 const tripMainElement = document.querySelector('.trip-main');
@@ -17,6 +18,7 @@ const tripMainElement = document.querySelector('.trip-main');
 
 export default class BoardPresenter {
   #tripEventListComponent = new TripEventsListView();
+  #loadingComponent = new LoadingView();
   #boardContainer = null;
   #pointsModel = null;
   #currentSort = SortType.DAY;
@@ -27,6 +29,7 @@ export default class BoardPresenter {
   #filterType = filterTypes.EVERYTHING;
   #newPointPresenter = null;
   #newPointButton = null;
+  #isLoading = true;
 
   constructor({boardContainer, pointsModel, filterModel}) {
     this.#boardContainer = boardContainer;
@@ -69,13 +72,13 @@ export default class BoardPresenter {
 
     render(this.#newPointButton, tripMainElement);
     render(new TripInfoView(), tripMainElement, 'afterbegin');
-    this.#renderSort();
+    // this.#renderSort();
     render(this.#tripEventListComponent, this.#boardContainer);
 
-    if (this.points.length === 0) {
-      this.#renderNoPoints();
-      return;
-    }
+    // if (this.points.length === 0) {
+    //   this.#renderNoPoints();
+    //   return;
+    // }
 
     this.#renderAllPoints();
   }
@@ -129,7 +132,6 @@ export default class BoardPresenter {
         });
         break;
 
-
       case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderSort();
@@ -139,6 +141,18 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         this.#clearBoard({resetSortType: true});
         this.#renderSort();
+        this.#renderAllPoints();
+        break;
+
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        this.#clearBoard();
+        render(this.#tripEventListComponent, this.#boardContainer);
+
+        if (this.points.length > 0) {
+          this.#renderSort();
+        }
+
         this.#renderAllPoints();
         break;
     }
@@ -173,13 +187,19 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer, 'afterbegin');
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer, 'afterbegin');
+  }
+
   #clearBoard({ resetSortType = false } = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
     this.#tripEventListComponent.element.innerHTML = '';
+    remove(this.#loadingComponent);
+    remove(this.#sortComponent);
+    // remove(this.#tripEventListComponent);
 
-    // remove(this.#sortComponent);
     // remove(this.#tripEventListComponent);
 
     // this.#tripEventListComponent = new TripEventsListView();
@@ -196,6 +216,13 @@ export default class BoardPresenter {
 
 
   #renderAllPoints() {
+    render(this.#tripEventListComponent, this.#boardContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if(this.points.length === 0) {
       this.#renderNoPoints();
       return;
