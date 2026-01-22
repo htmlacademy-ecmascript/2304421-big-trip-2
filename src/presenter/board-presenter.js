@@ -2,12 +2,10 @@ import SortingView from '../view/sorting-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import { render } from '../framework/render.js';
 import ListEmptyView from '../view/list-empty-view.js';
-import TripInfoView from '../view/trip-info-view.js';
 import PointPresenter from './point-presenter.js';
 import { SortType, UpdateType, UserAction, filterTypes } from '../const.js';
-import { sortByDay, sortByPrice, sortByTime } from '../utils.js';
+import { sortByDay, sortByPrice, sortByTime, pointFilter } from '../utils/utils.js';
 import { remove } from '../framework/render.js';
-import { pointFilter } from '../utils.js';
 import NewPointPresenter from './new-point-presenter.js';
 import NewPointButtonView from '../view/new-point-button-view.js';
 import LoadingView from '../view/loading-view.js';
@@ -80,7 +78,6 @@ export default class BoardPresenter {
     });
 
     render(this.#newPointButton, tripMainElement);
-    render(new TripInfoView(), tripMainElement, 'afterbegin');
     render(this.#tripEventListComponent, this.#boardContainer);
     this.#renderAllPoints();
   }
@@ -220,7 +217,6 @@ export default class BoardPresenter {
     this.#tripEventListComponent.element.innerHTML = '';
     remove(this.#loadingComponent);
     remove(this.#sortComponent);
-    // remove(this.#tripEventListComponent);
 
     if (resetSortType) {
       this.#currentSort = SortType.DAY;

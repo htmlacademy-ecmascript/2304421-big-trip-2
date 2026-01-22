@@ -1,6 +1,6 @@
 import { DATE_FORMAT } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { humanizeTaskDueDate } from '../utils.js';
+import { humanizeTaskDueDate } from '../utils/utils.js';
 import { pointTypes } from '../const.js';
 import flatpickr from 'flatpickr';
 import { defaultDatepickerOptions } from '../const.js';

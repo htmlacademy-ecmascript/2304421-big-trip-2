@@ -1,7 +1,7 @@
 import FiltersView from '../view/filters-view.js';
 import { render, replace, remove } from '../framework/render.js';
 import { filterTypes, UpdateType } from '../const.js';
-import { pointFilter } from '../utils.js';
+import { pointFilter } from '../utils/utils.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
@@ -30,7 +30,7 @@ export default class FilterPresenter {
   }
 
   init() {
-    const filters = this.filters;
+    const filters = this.#filterModel.getFilters(this.#pointsModel.getPoints());
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FiltersView({
