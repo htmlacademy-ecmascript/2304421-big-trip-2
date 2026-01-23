@@ -32,23 +32,37 @@ function createOffersTemplate(offers, point, isDisabled) {
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`).join('');
-}
 
-function createPhotosTemplate(pictures) {
-  return pictures.map((pic) => `<img class="event__photo" src="${he.encode(pic.src)}" alt="${he.encode(pic.description)}">`).join('');
-}
+function createDescriptionSectionTemplate(description, pictures) {
 
-function createPhotosSectionTemplate(pictures) {
-  if (!pictures || pictures.length === 0) {
+  function createPhotosTemplate() {
+    return pictures.map((pic) => `<img class="event__photo" src="${he.encode(pic.src)}" alt="${he.encode(pic.description)}">`).join('');
+  }
+
+  function createPhotosSectionTemplate() {
+    if (!pictures || pictures.length === 0) {
+      return '';
+    }
+
+    return `
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPhotosTemplate(pictures)}
+        </div>
+      </div>
+    `;
+  }
+
+  if (!description && (!pictures || pictures.length === 0)) {
     return '';
   }
 
   return `
-    <div class="event__photos-container">
-      <div class="event__photos-tape">
-        ${createPhotosTemplate(pictures)}
-      </div>
-    </div>
+    <section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      ${description ? `<p class="event__destination-description">${he.encode(description)}</p>` : ''}
+      ${createPhotosSectionTemplate(pictures)}
+    </section>
   `;
 }
 
@@ -119,12 +133,7 @@ function createEditPointTemplate(point, destination, offers, allDestinations, is
                       ${createOffersTemplate(offers, point)}
                     </div>
                   </section>
-
-                  <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${he.encode(description)}</p>
-                    ${createPhotosSectionTemplate(pictures)}
-                  </section>
+                  ${createDescriptionSectionTemplate(description, pictures)}
                 </section>
               </form>
             </li>`;
