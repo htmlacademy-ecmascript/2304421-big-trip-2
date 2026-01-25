@@ -104,10 +104,18 @@ export default class BoardPresenter {
       allDestinations: this.#pointsModel.getDestinations(),
       allOffersByType: this.#pointsModel.getAllOffers()
     });
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
+      this.#noPointComponent = null;
+    }
   };
 
   #handleNewPointDestroy = () => {
     this.#newPointButton.setEnabled();
+    if (this.points.length === 0) {
+      this.#renderNoPoints();
+    }
   };
 
   #handleModeChange = () => {
@@ -206,7 +214,7 @@ export default class BoardPresenter {
       currentFilterType: this.#filterType
     });
 
-    render(this.#noPointComponent, this.#boardContainer);
+    render(this.#noPointComponent, this.#tripEventListComponent.element);
   }
 
   #renderSort() {
@@ -226,7 +234,7 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
-    this.#tripEventListComponent.element.innerHTML = '';
+    // this.#tripEventListComponent.element.innerHTML = '';
     remove(this.#loadingComponent);
     remove(this.#sortComponent);
 
@@ -242,7 +250,7 @@ export default class BoardPresenter {
 
 
   #renderAllPoints() {
-    render(this.#tripEventListComponent, this.#boardContainer);
+    // render(this.#tripEventListComponent, this.#boardContainer);
 
     if (this.#isLoading) {
       this.#renderLoading();
