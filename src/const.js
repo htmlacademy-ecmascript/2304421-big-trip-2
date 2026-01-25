@@ -12,9 +12,10 @@ export const filterTypes = {
 
 export const NoPointsTextType = {
   everything: 'Click New Event to create your first point',
-  future: 'There are no points about the future',
-  present: 'There are no points about the present',
-  past: 'There are no points about the past'
+  future: 'There are no future events now',
+  present: 'There are no present events now',
+  past: 'There are no past events now',
+  error: 'Failed to load latest route information'
 };
 
 export const sortTypes = [
@@ -39,7 +40,7 @@ export const DATE_FORMAT = {
 
 export const defaultDatepickerOptions = {
   enableTime: true,
-  dateFormat: 'd.m.Y H:i',
+  dateFormat: 'd/m/y H:i',
   locale: {firstDayOfWeek: 1},
   'time_24hr': true
 };

@@ -33,7 +33,7 @@ function sortByTime(pointA, pointB) {
   const durationA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
   const durationB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
 
-  return durationA - durationB;
+  return durationB - durationA;
 }
 
 function sortByPrice(pointA, pointB) {
@@ -47,5 +47,23 @@ export const pointFilter = {
   past: (points) => points.filter((point) => point.dateTo < Date.now()),
 };
 
+export function formatDuration(dateFrom, dateTo) {
+  if (!dateFrom || !dateTo) {
+    return '';
+  }
+
+  const diffMs = dateTo - dateFrom;
+  const minutesTotal = Math.floor(diffMs / 60000);
+
+  const days = Math.floor(minutesTotal / (60 * 24));
+  const hours = Math.floor((minutesTotal % (60 * 24)) / 60);
+  const minutes = minutesTotal % 60;
+
+  const paddedDays = String(days).padStart(2, '0');
+  const paddedHours = String(hours).padStart(2, '0');
+  const paddedMinutes = String(minutes).padStart(2, '0');
+
+  return `${paddedDays}D ${paddedHours}H ${paddedMinutes}M`;
+}
 
 export { sortByDay, sortByPrice, sortByTime, getRandomArrayElement, humanizeTaskDueDate, getDifferenceInTime, getRandomBoolean, updateItem };

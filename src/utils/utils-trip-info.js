@@ -5,17 +5,18 @@ export const getTripRoute = (points, destinations) => {
     return '';
   }
 
-  const sortedPoints = [...points].sort((a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateTrom)));
+  const sortedPoints = [...points].sort((a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom)));
 
   const cities = sortedPoints.map((point) => destinations.find((dest) => dest.id === point.destination).name);
 
-  const uniqueCities = cities.filter((city, index) => city !== cities[index - 1]);
+  const uniqueCities = cities.filter((city, index) => city && city !== cities[index - 1]);
+
 
   if (uniqueCities.length > 3) {
-    return `${uniqueCities[0]} - ... - ${uniqueCities[uniqueCities.length - 1]}`;
+    return `${uniqueCities[0]} — ... — ${uniqueCities[uniqueCities.length - 1]}`;
   }
 
-  return uniqueCities.join(' - ');
+  return uniqueCities.join(' — ');
 };
 
 export const getTripDates = (points) => {
@@ -25,8 +26,8 @@ export const getTripDates = (points) => {
 
   const sortedPoints = [...points].sort((a, b) => dayjs(a.dateFrom).diff(dayjs(b.dateFrom)));
 
-  const startDate = dayjs(sortedPoints[0].dateFrom).format('MMM D');
-  const endDate = dayjs(sortedPoints[sortedPoints.length - 1].dateTo).format('MMM D');
+  const startDate = dayjs(sortedPoints[0].dateFrom).format('D MMM').toUpperCase();
+  const endDate = dayjs(sortedPoints[sortedPoints.length - 1].dateTo).format('D MMM').toUpperCase();
 
   return `${startDate} - ${endDate}`;
 };

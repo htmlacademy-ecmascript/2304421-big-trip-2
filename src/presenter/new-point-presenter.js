@@ -7,6 +7,7 @@ export default class NewPointPresenter {
   #handleDataChange = null;
   #handleDestroy = null;
   #editPointComponent = null;
+  #allOffersByType = null;
 
   constructor({ pointListContainer, onDataChange, onDestroy }) {
     this.#pointListContainer = pointListContainer;
@@ -14,17 +15,20 @@ export default class NewPointPresenter {
     this.#handleDestroy = onDestroy;
   }
 
-  init({ destination, offers, allDestinations, allOffersByType }) {
+  init({ destination, allDestinations, allOffersByType }) {
     if (this.#editPointComponent !== null) {
       return;
     }
 
+    this.#allOffersByType = allOffersByType;
+
     this.#editPointComponent = new EditPointView({
-      point: this.#createEmptyPoint(destination.id),
-      destination,
-      offers,
+      point: this.#createEmptyPoint(destination?.id ?? ''),
+      destination: destination ?? { name: '', description: '', picture: [] },
+      offers: this.#getOffersForType('flight'),
       allDestinations,
       allOffersByType,
+      isNewPoint: true,
       onFormSubmit: this.#handleFormSubmit,
       onRollUpBtnClick: this.destroy,
       onDeleteClick: this.destroy
@@ -34,15 +38,20 @@ export default class NewPointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  #getOffersForType(type) {
+    const offersByType = this.#allOffersByType.find((offer) => offer.type === type);
+    return offersByType ? offersByType.offers : [];
+  }
+
+
   destroy = () => {
-    if (this.#editPointComponent) {
-      remove(this.#editPointComponent);
-      this.#editPointComponent = null;
+    if (!this.#editPointComponent) {
+      return;
     }
 
-    // remove(this.#editPointComponent);
-
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    remove(this.#editPointComponent);
+    this.#editPointComponent = null;
     this.#handleDestroy();
   };
 
@@ -71,8 +80,6 @@ export default class NewPointPresenter {
       UpdateType.MAJOR,
       point
     );
-
-    // this.destroy();
   };
 
   #escKeyDownHandler = (evt) => {
@@ -85,8 +92,8 @@ export default class NewPointPresenter {
   #createEmptyPoint(destinationId) {
     return {
       basePrice: 0,
-      dateFrom: new Date(),
-      dateTo: new Date(),
+      dateFrom: null,
+      dateTo: null,
       destination: destinationId,
       isFavorite: false,
       offers: [],

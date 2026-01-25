@@ -6,6 +6,7 @@ export default class PointsModel extends Observable {
   #destinations = [];
   #offers = [];
   #pointsApiService = null;
+  #hasError = false;
 
   constructor({pointsApiService}) {
     super();
@@ -18,6 +19,11 @@ export default class PointsModel extends Observable {
     return this.#points;
   }
 
+  get hasError() {
+    return this.#hasError;
+  }
+
+
   async init() {
     try {
       const [points, destinations, offers] = await Promise.all([
@@ -29,7 +35,8 @@ export default class PointsModel extends Observable {
       this.#points = points.map((point) => this.#adaptToClient(point));
       this.#destinations = destinations;
       this.#offers = offers;
-    } catch {
+    } catch(err) {
+      this.#hasError = true;
       this.#points = [];
       this.#destinations = [];
       this.#offers = [];

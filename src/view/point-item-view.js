@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDifferenceInTime, humanizeTaskDueDate } from '../utils/utils.js';
+import { humanizeTaskDueDate } from '../utils/utils.js';
 import { DATE_FORMAT } from '../const.js';
+import { formatDuration } from '../utils/utils.js';
 
 function createOfferTemplate({title, price}) {
   return `<li class="event__offer">
@@ -11,8 +12,12 @@ function createOfferTemplate({title, price}) {
 }
 
 function createPointItemTemplate(point, destination, offers) {
-  const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
+  const { basePrice, dateFrom, dateTo, isFavorite, type, offers: selectedOfferIds } = point;
   const name = destination?.name ?? '';
+
+  const selectedOffers = offers.filter((offer) =>
+    selectedOfferIds.includes(offer.id)
+  );
 
   return `<li class="trip-events__item">
               <div class="event">
@@ -27,14 +32,14 @@ function createPointItemTemplate(point, destination, offers) {
                     &mdash;
                     <time class="event__end-time" datetime="${dateTo}">${humanizeTaskDueDate(dateTo, DATE_FORMAT.hour)}</time>
                   </p>
-                  <p class="event__duration">${getDifferenceInTime(dateFrom, dateTo)}</p>
+                  <p class="event__duration">${formatDuration(dateFrom, dateTo)}</p>
                 </div>
                 <p class="event__price">
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${offers.map((offer) => createOfferTemplate(offer)).join('')}
+                  ${selectedOffers.map((offer) => createOfferTemplate(offer)).join('')}
                 </ul>
                 <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
