@@ -1,28 +1,11 @@
 import dayjs from 'dayjs';
 
-function getRandomArrayElement(items) {
-  return items[Math.floor(Math.random() * items.length)];
-}
+const MS_IN_MINUTE = 60000;
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
 
 function humanizeTaskDueDate(dueDate, format) {
   return dueDate ? dayjs(dueDate).format(format) : '';
-}
-
-function getDifferenceInTime(dateFrom, dateTo) {
-  const diffInMinutes = dayjs(dateTo).diff(dayjs(dateFrom), 'minute');
-  const days = Math.floor(diffInMinutes / (24 * 60));
-  const hours = Math.floor((diffInMinutes % (24 * 60)) / 60);
-  const minutes = diffInMinutes % 60;
-  return `${days > 0 ? `${days}D ` : ''}${hours}H ${minutes}M`;
-}
-
-function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
-}
-
-
-function getRandomBoolean() {
-  return Math.random() < 0.5;
 }
 
 function sortByDay(pointA, pointB) {
@@ -53,11 +36,11 @@ export function formatDuration(dateFrom, dateTo) {
   }
 
   const diffMs = dateTo - dateFrom;
-  const minutesTotal = Math.floor(diffMs / 60000);
+  const minutesTotal = Math.floor(diffMs / MS_IN_MINUTE);
 
-  const days = Math.floor(minutesTotal / (60 * 24));
-  const hours = Math.floor((minutesTotal % (60 * 24)) / 60);
-  const minutes = minutesTotal % 60;
+  const days = Math.floor(minutesTotal / (MINUTES_IN_HOUR * HOURS_IN_DAY));
+  const hours = Math.floor((minutesTotal % (MINUTES_IN_HOUR * HOURS_IN_DAY)) / MINUTES_IN_HOUR);
+  const minutes = minutesTotal % MINUTES_IN_HOUR;
 
   const paddedDays = String(days).padStart(2, '0');
   const paddedHours = String(hours).padStart(2, '0');
@@ -66,4 +49,4 @@ export function formatDuration(dateFrom, dateTo) {
   return `${paddedDays}D ${paddedHours}H ${paddedMinutes}M`;
 }
 
-export { sortByDay, sortByPrice, sortByTime, getRandomArrayElement, humanizeTaskDueDate, getDifferenceInTime, getRandomBoolean, updateItem };
+export { sortByDay, sortByPrice, sortByTime, humanizeTaskDueDate };
